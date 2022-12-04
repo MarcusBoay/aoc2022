@@ -1,18 +1,11 @@
-use std::{env, fs};
+mod utils;
 
 fn main() {
-    let args = env::args().collect::<Vec<String>>();
-    if env::args().len() != 2 {
-        panic!("Usage: {} path/to/file", &args[0]);
-    }
-
-    let filepath = &args[1];
-    let data = fs::read_to_string(filepath)
-        .unwrap_or_else(|_| panic!("Unable to read file {}.", filepath.to_owned()));
+    let lines = utils::get_file_data_as_vec();
 
     let mut contained_pairs = 0;
     let mut overlapping_pairs = 0;
-    for line in data.trim().split('\n').collect::<Vec<&str>>() {
+    for line in lines {
         let pairs = line
             .split(',')
             .map(|x| {
