@@ -1,14 +1,9 @@
-use std::{collections::HashSet, env, fs};
+use std::collections::HashSet;
+
+mod utils;
 
 fn main() {
-    let args = env::args().collect::<Vec<String>>();
-    if env::args().len() != 2 {
-        panic!("Usage: {} path/to/file", &args[0]);
-    }
-
-    let filepath = &args[1];
-    let data = fs::read_to_string(filepath)
-        .unwrap_or_else(|_| panic!("Unable to read file {}.", filepath.to_owned()));
+    let data = utils::fast_get_file_data_as_vec();
 
     part1(&data);
     part2(&data);
@@ -27,16 +22,15 @@ fn get_priority_values(priorities: &Vec<char>) {
     println!("Total priorities: {total_priorities}");
 }
 
-fn part1(data: &str) {
+fn part1(data: &Vec<String>) {
     // Get all priorities in the form of characters.
     let mut priorities: Vec<char> = vec![];
-    for line in data.split('\n').map(String::from).collect::<Vec<String>>() {
-        let mut first_compartment: HashSet<char> = HashSet::new();
-        for (i, char) in line.chars().enumerate() {
-            if i < line.bytes().len() / 2 {
-                first_compartment.insert(char);
-            } else if first_compartment.contains(&char) {
-                priorities.push(char);
+    for line in data {
+        let first_compartment: HashSet<char> = HashSet::from_iter(line[0..line.len() / 2].chars());
+
+        for c in line[line.len() / 2..].chars() {
+            if first_compartment.contains(&c) {
+                priorities.push(c);
                 break;
             }
         }
@@ -45,16 +39,13 @@ fn part1(data: &str) {
     get_priority_values(&priorities);
 }
 
-fn part2(data: &str) {
+fn part2(data: &Vec<String>) {
     let mut groups: Vec<HashSet<char>> = vec![];
     let mut priorities: Vec<char> = vec![];
-    for (i, line) in data
-        .split('\n')
-        .map(String::from)
-        .collect::<Vec<String>>()
-        .iter()
-        .enumerate()
-    {
+    for line in data {
+        // Get set of three rucksacks.
+        groups.push(HashSet::from_iter(line.chars()));
+
         if groups.len() == 3 {
             // Get priority.
             for c in groups[0].iter() {
@@ -63,20 +54,19 @@ fn part2(data: &str) {
                     break;
                 }
             }
+            // Rusty version... Ugly...
+            // let common = groups[0]
+            //     .intersection(&groups[1])
+            //     .map(|x| x.to_owned())
+            //     .collect::<HashSet<char>>()
+            //     .intersection(&groups[2])
+            //     .map(|x| x.to_owned())
+            //     .collect::<HashSet<char>>();
+            // for c in common {
+            //     priorities.push(c);
+            // }
 
-            // Reset groups.
-            groups = vec![];
-        }
-
-        // Last line.
-        if line.is_empty() {
-            break;
-        }
-
-        // Get set of three rucksacks.
-        groups.push(HashSet::new());
-        for char in line.chars() {
-            groups[i % 3].insert(char);
+            groups.clear()
         }
     }
 
