@@ -1,7 +1,7 @@
 mod utils;
 
 fn main() {
-    let lines = utils::get_file_data_as_vec();
+    let lines = utils::fast_get_file_data_as_vec();
 
     let mut contained_pairs = 0;
     let mut overlapping_pairs = 0;
