@@ -2,7 +2,7 @@ mod utils;
 
 enum MoveType {
     OneByOne,
-    WholeGroup
+    WholeGroup,
 }
 
 fn main() {
@@ -18,7 +18,7 @@ fn solve(data: Vec<String>, move_type: MoveType) {
     let mut cont_i = 0;
     for (i, line) in data.iter().enumerate() {
         if line.is_empty() {
-            cont_i = i+1;
+            cont_i = i + 1;
             break;
         }
 
@@ -31,18 +31,21 @@ fn solve(data: Vec<String>, move_type: MoveType) {
 
     // Process actions
     for i in cont_i..data.len() {
-        let line = data[i].split(' ').map(|x| x.parse::<usize>().unwrap()).collect::<Vec<usize>>();
+        let line = data[i]
+            .split(' ')
+            .map(|x| x.parse::<usize>().unwrap())
+            .collect::<Vec<usize>>();
         let mut popped_stack: Vec<char> = vec![];
         for _ in 0..line[0] {
-            let popped = stacks[line[1]-1].pop().unwrap();
+            let popped = stacks[line[1] - 1].pop().unwrap();
             popped_stack.push(popped);
         }
         match move_type {
             MoveType::WholeGroup => popped_stack.reverse(),
-            _ => ()
+            _ => (),
         }
         for val in popped_stack {
-            stacks[line[2]-1].push(val);
+            stacks[line[2] - 1].push(val);
         }
     }
 
