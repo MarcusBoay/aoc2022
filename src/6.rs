@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 mod utils;
 
 fn main() {
@@ -14,14 +12,14 @@ fn main() {
 fn find_marker(data: &Vec<char>, max_no: usize) {
     let mut i: usize = 0;
     let mut j: usize = 0;
-    let mut ss: Vec<i32> = vec![0; 27];
+    let mut char_arr: Vec<i32> = vec![0; 26];
     loop {
         if j - i < max_no {
-            ss[(data[j].to_digit(36).unwrap() - 9) as usize] += 1;
+            char_arr[to_num(data[j])] += 1;
             j += 1;
         } else {
             let mut found = true;
-            for n in &ss {
+            for n in &char_arr {
                 if n > &1 {
                     found = false;
                 }
@@ -30,10 +28,14 @@ fn find_marker(data: &Vec<char>, max_no: usize) {
                 println!("Found after character {}", j);
                 break;
             }
-            ss[(data[i].to_digit(36).unwrap() - 9) as usize] -= 1;
+            char_arr[to_num(data[i])] -= 1;
+            char_arr[to_num(data[j])] += 1;
             i += 1;
-            ss[(data[j].to_digit(36).unwrap() - 9) as usize] += 1;
             j += 1;
         }
     }
+}
+
+fn to_num(c: char) -> usize {
+    (c.to_digit(36).unwrap() - 10) as usize
 }
