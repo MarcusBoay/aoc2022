@@ -67,59 +67,43 @@ fn get_outer_surface_area(coords: &HashSet<(i32, i32, i32)>) {
     mat[0][0][0] = 'o';
     let mut q_size = q.len();
     while q_size > 0 {
-        let p_i = q.pop_back().unwrap();
-        let p = (p_i.0 as usize, p_i.1 as usize, p_i.2 as usize);
+        let p = q.pop_back().unwrap();
+        let p = (p.0 as usize, p.1 as usize, p.2 as usize);
 
         if p.0 > 0 {
-            if mat[p.0 - 1][p.1][p.2] == ' ' {
-                q.push_back((p_i.0 - 1, p_i.1, p_i.2));
-                mat[p.0 - 1][p.1][p.2] = 'o';
-            } else if mat[p.0 - 1][p.1][p.2] == 'x' {
-                surface_area += 1;
-            }
+            surface_area += mod_mat((p.0 - 1, p.1, p.2), &mut q, &mut mat);
         }
         if p.0 < mat.len() - 1 {
-            if mat[p.0 + 1][p.1][p.2] == ' ' {
-                q.push_back((p_i.0 + 1, p_i.1, p_i.2));
-                mat[p.0 + 1][p.1][p.2] = 'o';
-            } else if mat[p.0 + 1][p.1][p.2] == 'x' {
-                surface_area += 1;
-            }
+            surface_area += mod_mat((p.0 + 1, p.1, p.2), &mut q, &mut mat);
         }
         if p.1 > 0 {
-            if mat[p.0][p.1 - 1][p.2] == ' ' {
-                q.push_back((p_i.0, p_i.1 - 1, p_i.2));
-                mat[p.0][p.1 - 1][p.2] = 'o';
-            } else if mat[p.0][p.1 - 1][p.2] == 'x' {
-                surface_area += 1;
-            }
+            surface_area += mod_mat((p.0, p.1 - 1, p.2), &mut q, &mut mat);
         }
         if p.1 < mat[0].len() - 1 {
-            if mat[p.0][p.1 + 1][p.2] == ' ' {
-                q.push_back((p_i.0, p_i.1 + 1, p_i.2));
-                mat[p.0][p.1 + 1][p.2] = 'o';
-            } else if mat[p.0][p.1 + 1][p.2] == 'x' {
-                surface_area += 1;
-            }
+            surface_area += mod_mat((p.0, p.1 + 1, p.2), &mut q, &mut mat);
         }
         if p.2 > 0 {
-            if mat[p.0][p.1][p.2 - 1] == ' ' {
-                q.push_back((p_i.0, p_i.1, p_i.2 - 1));
-                mat[p.0][p.1][p.2 - 1] = 'o';
-            } else if mat[p.0][p.1][p.2 - 1] == 'x' {
-                surface_area += 1;
-            }
+            surface_area += mod_mat((p.0, p.1, p.2 - 1), &mut q, &mut mat);
         }
         if p.2 < mat[0][0].len() - 1 {
-            if mat[p.0][p.1][p.2 + 1] == ' ' {
-                q.push_back((p_i.0, p_i.1, p_i.2 + 1));
-                mat[p.0][p.1][p.2 + 1] = 'o';
-            } else if mat[p.0][p.1][p.2 + 1] == 'x' {
-                surface_area += 1;
-            }
+            surface_area += mod_mat((p.0, p.1, p.2 + 1), &mut q, &mut mat);
         }
 
         q_size = q.len();
     }
     println!("Total outer surface area: {surface_area}");
+}
+
+fn mod_mat(
+    p: (usize, usize, usize),
+    q: &mut VecDeque<(i32, i32, i32)>,
+    mat: &mut Vec<Vec<Vec<char>>>,
+) -> i32 {
+    if mat[p.0][p.1][p.2] == ' ' {
+        q.push_back((p.0 as i32, p.1 as i32, p.2 as i32));
+        mat[p.0][p.1][p.2] = 'o';
+    } else if mat[p.0][p.1][p.2] == 'x' {
+        return 1;
+    }
+    0
 }
